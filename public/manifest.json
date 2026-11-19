@@ -1,0 +1,24 @@
+{
+  "name": "Liam - Sueño & Ventanas de Vigilia",
+  "short_name": "Liam Sueño",
+  "description": "Control de siestas y ventanas de vigilia para Liam",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0F19",
+  "theme_color": "#0B0F19",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/moon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/moon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
