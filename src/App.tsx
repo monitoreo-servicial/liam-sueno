@@ -6,9 +6,11 @@ import { StartSleepModal } from './components/StartSleepModal';
 import { EndSleepModal } from './components/EndSleepModal';
 import { ManualEntryModal } from './components/ManualEntryModal';
 import { SettingsModal } from './components/SettingsModal';
+import { InstallPromptModal } from './components/InstallPromptModal';
 import { api } from './api/client';
 import type { SleepSession, BabySettings, Caregiver, SleepType, SleepMethod, SleepLocation, SleepQuality } from './types';
 import { computeWakeWindowState, calculateBabyAge } from './utils/sleepMath';
+import { Download, Sparkles } from 'lucide-react';
 
 export function App() {
   const [sessions, setSessions] = useState<SleepSession[]>(() => {
@@ -36,11 +38,21 @@ export function App() {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [now, setNow] = useState<Date>(new Date());
 
+  // Standalone detection (PWA installed vs browser tab)
+  const [isStandalone, setIsStandalone] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true
+    );
+  });
+
   // Modals
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
 
   // Caregiver persistence
   const handleCaregiverChange = (c: Caregiver) => {
@@ -188,6 +200,8 @@ export function App() {
         caregiver={caregiver}
         onCaregiverChange={handleCaregiverChange}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
+        onOpenInstall={() => setIsInstallModalOpen(true)}
+        isStandalone={isStandalone}
         isSyncing={isSyncing}
         onSync={() => fetchData(true)}
         babyAge={babyAge}
@@ -196,6 +210,26 @@ export function App() {
 
       {/* Main Body */}
       <main className="flex-1 max-w-md w-full mx-auto px-4 py-4 pb-20">
+        {/* Banner for quick install on iPhone/Android */}
+        {!isStandalone && (
+          <div className="mb-4 bg-gradient-to-r from-indigo-950/80 via-slate-900 to-indigo-950/80 border border-indigo-500/30 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-lg shadow-indigo-950/30">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl">📲</span>
+              <div>
+                <p className="text-xs font-bold text-white">¿Querés tenerla como App?</p>
+                <p className="text-[11px] text-slate-400">Instálala en tu iPhone o Android</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsInstallModalOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-xs font-bold text-white shadow-sm shadow-indigo-600/30 whitespace-nowrap flex items-center gap-1.5 transition"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Instalar</span>
+            </button>
+          </div>
+        )}
+
         {/* Wake Window Status & 1-Tap Sleep/Wake Hero Card */}
         <WakeWindowHero
           state={wakeState}
@@ -239,6 +273,11 @@ export function App() {
         onClose={() => setIsSettingsModalOpen(false)}
         settings={settings}
         onSave={handleSaveSettings}
+      />
+
+      <InstallPromptModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
       />
     </div>
   );

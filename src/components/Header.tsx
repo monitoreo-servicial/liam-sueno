@@ -1,11 +1,13 @@
 import React from 'react';
-import { Moon, Sun, RefreshCw, Settings, Baby, Heart } from 'lucide-react';
+import { RefreshCw, Settings, Baby, Heart, Download } from 'lucide-react';
 import type { Caregiver } from '../types';
 
 interface HeaderProps {
   caregiver: Caregiver;
   onCaregiverChange: (caregiver: Caregiver) => void;
   onOpenSettings: () => void;
+  onOpenInstall: () => void;
+  isStandalone: boolean;
   isSyncing: boolean;
   onSync: () => void;
   babyAge: string;
@@ -16,6 +18,8 @@ export const Header: React.FC<HeaderProps> = ({
   caregiver,
   onCaregiverChange,
   onOpenSettings,
+  onOpenInstall,
+  isStandalone,
   isSyncing,
   onSync,
   babyAge,
@@ -45,6 +49,18 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right actions */}
         <div className="flex items-center gap-2">
+          {/* Install Button (Highlighted if in browser) */}
+          {!isStandalone && (
+            <button
+              onClick={onOpenInstall}
+              title="Instalar en iPhone / Celular"
+              className="h-9 px-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 active:scale-95 text-white flex items-center gap-1.5 text-xs font-bold transition border border-indigo-400/40 shadow-sm shadow-indigo-500/30 animate-soft-pulse"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Instalar</span>
+            </button>
+          )}
+
           {/* Refresh button */}
           <button
             onClick={onSync}
